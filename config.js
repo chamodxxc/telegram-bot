@@ -15,7 +15,7 @@ const config = {
   botName: process.env.BOT_NAME || "WHITESHADOw-MD",
   timezone: process.env.TIMEZONE || "Asia/Colombo",
   ownerName: process.env.OWNER_NAME || "Chamod Nimsara",
-  ownerUsername: process.env.OWNER_USERNAME || "whiteshadow",
+  ownerUsername: process.env.OWNER_USERNAME || "@cnw125",
   apiUrl: process.env.API_URL || "https://api.gifted.co.ke", // Can replce with yours
   artistName: process.env.ARTIST_NAME || "Powered by whiteshadow-md",
   url: process.env.URL || "https://whiteshadow-uploder.zone.id/files/ntc.jpg",
