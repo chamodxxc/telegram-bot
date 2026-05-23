@@ -8,7 +8,7 @@ require('dotenv').config({
 });
 
 const config = {
-  token: process.env.BOT_TOKEN || "8467583009:AAG-2FjRvTWuCLxM-TsUoWIsMnta_Z4Q4DU", // Your bot token
+  token: process.env.BOT_TOKEN || "8467583009:AAHmKZ-doJ5pltGyDbgc9HHm2KR7VNh1hQM", // Your bot token
   owner_id: process.env.OWNER_ID || "7330881176", // Your telegram chat id
   prefix: process.env.PREFIX || "/", // Your preferred prefix
   apiKey: process.env.API_KEY || "gifted", //Replace with your unlimited/paid apikey
