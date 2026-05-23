@@ -12,18 +12,18 @@ const config = {
   owner_id: process.env.OWNER_ID || "7330881176", // Your telegram chat id
   prefix: process.env.PREFIX || "/", // Your preferred prefix
   apiKey: process.env.API_KEY || "gifted", //Replace with your unlimited/paid apikey
-  botName: process.env.BOT_NAME || "GIFTED-MD",
+  botName: process.env.BOT_NAME || "WHITESHADOw-MD",
   timezone: process.env.TIMEZONE || "Asia/Colombo",
   ownerName: process.env.OWNER_NAME || "Chamod Nimsara",
   ownerUsername: process.env.OWNER_USERNAME || "whiteshadow",
   apiUrl: process.env.API_URL || "https://api.gifted.co.ke", // Can replce with yours
   artistName: process.env.ARTIST_NAME || "Powered by whiteshadow-md",
-  url: process.env.URL || "https://gitcdn.gifted.co.ke/image/AZO_image.jpg",
-  sourceUrl: process.env.SOURCE_URL || "https://github.com/mauricegift/telegram-bot",
+  url: process.env.URL || "https://whiteshadow-uploder.zone.id/files/ntc.jpg",
+  sourceUrl: process.env.SOURCE_URL || "https://whiteshadow-md.zone.id",
 
   greetNewMembers: {
     enabled: process.env.GREET_ENABLED !== "false",
-    gifUrl: process.env.GIF_URL || "https://files.catbox.moe/pm9x7c.gif",
+    gifUrl: process.env.GIF_URL || "https://whiteshadow-uploder.zone.id/files/g8py.jpg",
   },
 
   antiLink: {
