@@ -58,40 +58,39 @@ gmd({
 // =====================
 gmd({
     pattern: "play",
-    aliases: ["song", "music"],
     react: "🎵",
-    category: "download",
-    description: "YouTube audio download",
-    cooldown: 5
+    category: "download"
 }, async (msg, Gifted, conText) => {
 
     const { reply, q, chatId } = conText;
-
-    if (!q) return reply("🎵 Usage: .play song name");
+    if (!q) return reply("🎵 .play song name");
 
     try {
         await Gifted.sendChatAction(chatId, "typing");
 
         const video = await getYts(q);
-        if (!video) return reply("❌ No results found.");
+        if (!video) return reply("❌ No results");
 
-        const api = `https://api-ytdlwsmd-mini.vercel.app/api/download?url=${video.url}&quality=mp3`;
+        const api = buildApi(video.url, "mp3");
 
         const res = await axios.get(api);
-        if (!res.data.status) return reply("❌ Download failed.");
+
+        if (!res.data || !res.data.status || !res.data.result?.download) {
+            return reply("❌ API failed (audio)");
+        }
 
         const data = res.data.result;
 
+        // 🔥 SAFE send (URL method)
         await Gifted.sendMessage(chatId, {
             audio: { url: data.download },
             mimetype: "audio/mpeg",
-            fileName: `${data.title}.mp3`,
-            caption: `🎵 *${data.title}*\n🎧 WhiteShadow Music`
+            fileName: `${data.title}.mp3`
         }, { quoted: msg });
 
     } catch (e) {
         console.log(e);
-        reply("❌ Audio error");
+        reply("❌ Audio error (fixed needed)");
     }
 });
 
@@ -159,22 +158,27 @@ gmd({
         const url = args[0];
         const quality = args[1] || "720";
 
+        if (!url) return reply("❌ Invalid data");
+
         await Gifted.sendChatAction(chatId, "upload_video");
 
-        const api = `https://api-ytdlwsmd-mini.vercel.app/api/download?url=${url}&quality=${quality}`;
+        const api = buildApi(url, quality);
 
         const res = await axios.get(api);
-        if (!res.data.status) return reply("❌ Download failed.");
+
+        if (!res.data || !res.data.status || !res.data.result?.download) {
+            return reply("❌ API failed (video)");
+        }
 
         const data = res.data.result;
 
         await Gifted.sendMessage(chatId, {
             video: { url: data.download },
-            caption: `🎬 *${data.title}*\n📺 ${data.quality}\n⚡ WhiteShadow API`
+            caption: `🎬 ${data.title}\n📺 ${data.quality}`
         }, { quoted: msg });
 
     } catch (e) {
         console.log(e);
-        reply("❌ Download error");
+        reply("❌ Video error fixed needed");
     }
 });
