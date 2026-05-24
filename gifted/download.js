@@ -3,6 +3,13 @@ const { gmd } = require("../gift");
 const { searchGiftedTechYts } = require("../gift/gmdHelpers");
 
 // =====================
+// SAFE API BUILDER
+// =====================
+const buildApi = (url, quality) => {
+    return `https://api-ytdlwsmd-mini.vercel.app/api/download?url=${encodeURIComponent(url)}&quality=${quality}`;
+};
+
+// =====================
 // YTS HELPER
 // =====================
 async function getYts(query) {
@@ -12,7 +19,7 @@ async function getYts(query) {
 }
 
 // =====================
-// 🔍 SEARCH COMMAND
+// 🔍 YTS SEARCH
 // =====================
 gmd({
     pattern: "yts",
@@ -23,10 +30,7 @@ gmd({
 }, async (msg, Gifted, conText) => {
 
     const { reply, q, prefix, chatId } = conText;
-
-    if (!q) {
-        return reply(`🔍 Usage:\n${prefix}yts song name`);
-    }
+    if (!q) return reply(`🔍 Usage:\n${prefix}yts song name`);
 
     try {
         await Gifted.sendChatAction(chatId, "typing");
@@ -43,7 +47,7 @@ gmd({
             text += `📺 ${v.author}\n\n`;
         });
 
-        text += `\n👉 Use:\n.play name\n.video name`;
+        text += `👉 Use:\n.play song name\n.video song name`;
 
         await reply(text);
 
@@ -54,34 +58,37 @@ gmd({
 });
 
 // =====================
-// 🎵 PLAY (AUDIO)
+// 🎵 PLAY AUDIO (FIXED)
 // =====================
 gmd({
     pattern: "play",
+    aliases: ["song", "music"],
     react: "🎵",
-    category: "download"
+    category: "download",
+    description: "YouTube audio downloader",
+    cooldown: 5
 }, async (msg, Gifted, conText) => {
 
     const { reply, q, chatId } = conText;
-    if (!q) return reply("🎵 .play song name");
+    if (!q) return reply("🎵 Usage: .play song name");
 
     try {
         await Gifted.sendChatAction(chatId, "typing");
 
         const video = await getYts(q);
-        if (!video) return reply("❌ No results");
+        if (!video) return reply("❌ No results found.");
 
         const api = buildApi(video.url, "mp3");
 
         const res = await axios.get(api);
 
-        if (!res.data || !res.data.status || !res.data.result?.download) {
-            return reply("❌ API failed (audio)");
+        if (!res?.data?.status || !res.data?.result?.download) {
+            console.log("AUDIO API FAIL:", res.data);
+            return reply("❌ Audio API failed");
         }
 
         const data = res.data.result;
 
-        // 🔥 SAFE send (URL method)
         await Gifted.sendMessage(chatId, {
             audio: { url: data.download },
             mimetype: "audio/mpeg",
@@ -89,24 +96,23 @@ gmd({
         }, { quoted: msg });
 
     } catch (e) {
-        console.log(e);
+        console.log("PLAY ERROR:", e);
         reply("❌ Audio error (fixed needed)");
     }
 });
 
 // =====================
-// 🎬 VIDEO (BUTTON UI)
+// 🎬 VIDEO BUTTON MENU
 // =====================
 gmd({
     pattern: "video",
     react: "🎬",
     category: "download",
-    description: "YouTube video with quality buttons",
+    description: "YouTube video downloader with quality buttons",
     cooldown: 5
 }, async (msg, Gifted, conText) => {
 
     const { reply, q, chatId } = conText;
-
     if (!q) return reply("🎬 Usage: .video song name");
 
     try {
@@ -119,9 +125,10 @@ gmd({
 `🎬 *WhiteShadow Video Downloader*
 
 🎵 ${video.name}
-⏱ ${video.duration}
-👁 ${video.views}
-📌 Choose Quality 👇`;
+⏱ ${video.duration || "Unknown"}
+👁 ${video.views || 0}
+
+📌 Select Quality 👇`;
 
         await Gifted.sendMessage(chatId, {
             image: { url: video.thumbnail || "https://i.imgur.com/2nCt3Sbl.jpg" },
@@ -158,7 +165,7 @@ gmd({
         const url = args[0];
         const quality = args[1] || "720";
 
-        if (!url) return reply("❌ Invalid data");
+        if (!url) return reply("❌ Invalid request");
 
         await Gifted.sendChatAction(chatId, "upload_video");
 
@@ -166,19 +173,20 @@ gmd({
 
         const res = await axios.get(api);
 
-        if (!res.data || !res.data.status || !res.data.result?.download) {
-            return reply("❌ API failed (video)");
+        if (!res?.data?.status || !res.data?.result?.download) {
+            console.log("VIDEO API FAIL:", res.data);
+            return reply("❌ Video API failed");
         }
 
         const data = res.data.result;
 
         await Gifted.sendMessage(chatId, {
             video: { url: data.download },
-            caption: `🎬 ${data.title}\n📺 ${data.quality}`
+            caption: `🎬 ${data.title}\n📺 ${data.quality}\n⚡ WhiteShadow API`
         }, { quoted: msg });
 
     } catch (e) {
-        console.log(e);
-        reply("❌ Video error fixed needed");
+        console.log("VIDEO ERROR:", e);
+        reply("❌ Video error (fixed needed)");
     }
 });
